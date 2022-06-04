@@ -144,3 +144,4 @@ mmaction/.mim
 *.avoid
 *.png
 *.jpg
+build_report.txt

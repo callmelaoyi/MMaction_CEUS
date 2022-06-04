@@ -235,3 +235,7 @@ data/CICV_CEUS/videos/malign/5.avi
 ../CEUS400/video/inflammation/35.avi
 ../CEUS400/video/inflammation/59.avi
 ../CEUS400/video/inflammation/96.avi
+../CEUS400/video/malign/105.avi
+../CEUS400/video/inflammation/62.avi
+../CEUS400/video/inflammation/74.avi
+../CEUS400/video/inflammation/84.avi
