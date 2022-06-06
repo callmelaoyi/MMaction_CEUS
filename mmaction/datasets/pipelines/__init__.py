@@ -21,7 +21,7 @@ from .pose_loading import (GeneratePoseTarget, LoadKineticsPose,
                            PaddingWithLoop, PoseDecode, PoseNormalize,
                            UniformSampleFrames)
 
-from .ceus_custom import GaussianSampleFrames
+from .ceus_custom import GaussianSampleFrames, SelectROI
 
 
 __all__ = [
@@ -41,5 +41,5 @@ __all__ = [
     'PoseDecode', 'LoadKineticsPose', 'GeneratePoseTarget', 'PIMSInit',
     'PIMSDecode', 'TorchvisionTrans', 'PytorchVideoTrans', 'PoseNormalize',
     'FormatGCNInput', 'PaddingWithLoop', 'ArrayDecode', 'JointToBone',
-    'GaussianSampleFrames'
+    'GaussianSampleFrames', 'SelectROI'
 ]

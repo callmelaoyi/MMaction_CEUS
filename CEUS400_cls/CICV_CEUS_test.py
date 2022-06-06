@@ -3,7 +3,7 @@ from mmcv import Config, DictAction
 
 
 
-cfg = Config.fromfile('CICV_CEUS_config.py')
+cfg = Config.fromfile('CEUS400_cls/CEUS400_config.py')
 
 # dataset = build_dataset(cfg.data.train)
 dataset = build_dataset(cfg.data.val)

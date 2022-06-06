@@ -26,7 +26,7 @@ class GaussianSampleFrames(SampleFrames):
         super().__init__(clip_len, frame_interval, num_clips, temporal_jitter, twice_sample, out_of_bound_opt, test_mode, start_index, keep_tail_frames)
         self.mean =mean
         self.sigma = sigma
-        self.normalDist = NormalDist(mean, sigma)
+        self.normalDist_sec = NormalDist(mean, sigma)
     
     def _get_train_clips(self, num_frames):
         _coeff = (self.normalDist.cdf(num_frames) - self.normalDist.cdf(0)) / self.num_clips
@@ -45,6 +45,12 @@ class GaussianSampleFrames(SampleFrames):
         clip_offsets = (base_offsets[:-1]  + base_offsets[1:]) / 2 
         return clip_offsets.astype(np.int)
     
+    def __call__(self, results):
+        self.rate = results['rate']
+        self.normalDist = self.normalDist_sec * self.rate
+        # print(self.normalDist)
+        return super().__call__(results)
+    
     def __repr__(self):
         repr_str = (f'{self.__class__.__name__}('
                 f'mean={self.mean}, '
@@ -57,3 +63,22 @@ class GaussianSampleFrames(SampleFrames):
                 f'out_of_bound_opt={self.out_of_bound_opt}, '
                 f'test_mode={self.test_mode})')
         return repr_str
+
+
+@PIPELINES.register_module()
+class SelectROI:
+    def __init__(self, roi_cfg) -> None:
+        self.roi_cfg = roi_cfg
+    
+    
+    def __call__(self, results):
+        imgs = results['imgs']
+        roi = self.roi_cfg[imgs[0].shape]
+        img_roi = [img_cur[roi[1]:roi[1]+roi[3], roi[0]:roi[0]+roi[2]]
+                    for img_cur in imgs]
+        results['imgs'] = img_roi
+        # results['original_shape'] = img_roi[0].shape[:2]
+        results['img_shape'] = img_roi[0].shape[:2]
+        
+        return results
+        

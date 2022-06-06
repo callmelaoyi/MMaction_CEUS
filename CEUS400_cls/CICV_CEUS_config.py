@@ -4,24 +4,29 @@
 # )
 
 
-dataset_type = 'RawframeDataset'
+dataset_type = 'CEUSDatsaset'
 data_root = '.'
 data_root_val = '.'
 split = 1  # official train/test splits. valid numbers: 1, 2, 3
-ann_file_train = f'data/CICV_CEUS/CICV_rawframes.txt'
-ann_file_val = f'data/CICV_CEUS/CICV_rawframes.txt'
-ann_file_test = f'data/CICV_CEUS/CICV_rawframes.txt'
+ann_file_train = f'data/CEUS400/CEUS400_rawframes.txt'
+ann_file_val = f'data/CEUS400/CEUS400_rawframes.txt'
+ann_file_test = f'data/CEUS400/CEUS400_rawframes.txt'
 gaussian_cfg = dict(mean=625,sigma=250)
+roi_cfg = {(600, 800, 3): (69, 81, 338, 485), 
+           (1080, 1440, 3): (15, 164, 683, 779), 
+           (910, 1260, 3): (552, 130, 564, 698), 
+           (768, 1024, 3): (37, 78, 484, 602)}
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 train_pipeline = [
     dict(type='GaussianSampleFrames',**gaussian_cfg,clip_len=1, frame_interval=1, num_clips=16),
     dict(type='RawFrameDecode'),
-    # dict(type='Resize', scale=(-1, 256)),
-    # dict(type='RandomResizedCrop'),
-    # dict(type='Resize', scale=(224, 224), keep_ratio=False),
-    # dict(type='Flip', flip_ratio=0.5),
-    # dict(type='Normalize', **img_norm_cfg),
+    dict(type='SelectROI', roi_cfg=roi_cfg),
+    dict(type='Resize', scale=(-1, 256)),
+    dict(type='RandomResizedCrop'),
+    dict(type='Resize', scale=(224, 224), keep_ratio=False),
+    dict(type='Flip', flip_ratio=0.5),
+    dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
     dict(type='Collect', keys=['imgs', 'label'], meta_keys=[]),
     dict(type='ToTensor', keys=['imgs', 'label'])
@@ -35,6 +40,7 @@ val_pipeline = [
         num_clips=16,
         test_mode=True),
     dict(type='RawFrameDecode'),
+    dict(type='SelectROI', roi_cfg=roi_cfg),
     dict(type='Resize', scale=(-1, 256)),
     dict(type='CenterCrop', crop_size=256),
     dict(type='Normalize', **img_norm_cfg),
@@ -50,6 +56,7 @@ test_pipeline = [
         num_clips=25,
         test_mode=True),
     dict(type='RawFrameDecode'),
+    dict(type='SelectROI', roi_cfg=roi_cfg),
     # dict(type='Resize', scale=(-1, 256)),
     # dict(type='ThreeCrop', crop_size=256),
     # dict(type='Normalize', **img_norm_cfg),
