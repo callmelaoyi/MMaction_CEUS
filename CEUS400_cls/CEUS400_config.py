@@ -1,7 +1,7 @@
 _base_ = ['../configs/_base_/models/tsn_r50.py', '../configs/_base_/default_runtime.py']
 
-model = dict(cls_head=dict(num_classes=3, init_std=0.001,topk=1))
-model = dict(backbone=dict(partial_bn=True,))
+model = dict(backbone=dict(frozen_stages=2,), cls_head=dict(num_classes=3, dropout_ratio=0.8, init_std=0.001,topk=1))
+# model = dict()
 dataset_type = 'CEUSDatsaset'
 data_root = '.'
 data_root_val = '.'
@@ -56,7 +56,7 @@ test_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 data = dict(
-    videos_per_gpu=12,
+    videos_per_gpu=16,
     workers_per_gpu=2,
     test_dataloader=dict(videos_per_gpu=1),
     train=dict(
@@ -80,13 +80,13 @@ evaluation = dict(
 
 optimizer = dict(
     type='SGD', lr=5e-3, momentum=0.9,
-    weight_decay=0.0001)  # this lr is used for 8 gpus
+    weight_decay=0.0005)  
 optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
 # learning policy
 lr_config = dict(policy='step', step=[])
-total_epochs = 75
-
+total_epochs = 150
+log_config = dict(interval=5,)
+find_unused_parameters = True
 # runtime settings
 checkpoint_config = dict(interval=5)
-load_from = "CEUS400_cls/tsn_r50_1x1x3_75e_ucf101_rgb_20201023-d85ab600.pth"
-# work_dir = f'./work_dirs/tsn_r50_1x1x3_75e_ucf101_split_{split}_rgb/'
+# load_from = "CEUS400_cls/tsn_r50_1x1x3_75e_ucf101_rgb_20201023-d85ab600.pth"
